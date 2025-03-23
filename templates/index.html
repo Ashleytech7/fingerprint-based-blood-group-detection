@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Group Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <style>
+        /* Reset default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+        
+        /* Hero section styles */
+        .hero-section {
+            background-color: #212529; /* Dark background */
+            color: white;
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .hero-container {
+            padding: 3rem 0;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .hero-content {
+            max-width: 50%;
+            margin: 0 auto;
+        }
+        
+        .hero-text {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards 0.2s;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards 0.4s;
+        }
+        
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            border-radius: 0.25rem;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+        
+        .btn-primary {
+            background-color: transparent;
+            color: #c0392b; /* Info color */
+            border-color: #c0392b;
+            font-weight: 700;
+            font-size: 1.25rem;
+            padding: 0.5rem 1.5rem;
+            margin-right: 0.75rem;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+        
+        /* About section styles */
+        .about-section {
+            padding: 5rem 2rem;
+            background-color: #181818;
+            text-align: center;
+        }
+        
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #e0e0e0;
+            position: relative;
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #c0392b;
+        }
+        
+        .about-text {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            font-style: italic;
+            color: #b0b0b0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        /* Feature Containers with 3D Perspective */
+        .features-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            perspective: 1000px; /* Enable 3D space for children */
+        }
+        
+        /* Enhanced Feature Cards with Animations */
+        .feature {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 2rem;
+            width: calc(50% - 1rem);
+            text-align: left;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+        
+        /* Add a subtle gradient background effect on hover */
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(192, 57, 43, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+        
+        .feature:hover::before {
+            opacity: 1;
+        }
+        
+        /* Enhanced hover effect */
+        .feature:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+            background-color: #333333;
+        }
+        
+        /* Add a subtle border glow effect */
+        .feature::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 8px;
+            box-shadow: 0 0 0 0 rgba(192, 57, 43, 0);
+            transition: box-shadow 0.5s ease;
+        }
+        
+        .feature:hover::after {
+            box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.5);
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        
+        /* Make the title stand out more on hover */
+        .feature:hover .feature-title {
+            color: #ff8a8a;
+            transform: translateX(5px);
+        }
+        
+        /* Animate the checkmark */
+        .feature-title::before {
+            content: "✔";
+            color: #0dcaf0;
+            margin-right: 10px;
+            font-weight: bold;
+            display: inline-block;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        
+        .feature:hover .feature-title::before {
+            transform: scale(1.2) rotate(10deg);
+            color: #14e0ff;
+            animation: bounce 1s ease infinite;
+        }
+        
+        /* Extra animation for feature icon on hover */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        /* Text animation on hover */
+        .feature-text {
+            color: #cccccc;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+        
+        .feature:hover .feature-text {
+            color: #ffffff;
+        }
+        
+        /* Add ripple effect on click */
+        .feature.ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        /* Learn More Button */
+        .learn-more-container {
+            margin-top: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .btn-secondary {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border: 2px solid #c0392b;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #c0392b;
+            color: white;
+            box-shadow: 0 0 10px rgba(192, 57, 43, 0.5);
+        }
+        
+        /* Footer Styles */
+        .footer {
+            background-color: #1e1e1e;
+            color: #b0b0b0;
+            padding: 3rem 2rem 1.5rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .footer-section {
+            width: 25%;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-title {
+            color: #e0e0e0;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #c0392b;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #ff6b6b;
+        }
+        
+        .copyright {
+            text-align: center;
+            border-top: 1px solid #333;
+            padding-top: 1.5rem;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        /* Animation Keyframes */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Fade in/out animation class */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Media queries for responsive design */
+        @media (max-width: 992px) {
+            .hero-content {
+                max-width: 100%;
+                padding: 0 1rem;
+            }
+            
+            .feature {
+                width: 100%;
+            }
+            
+            .footer-section {
+                width: 50%;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+                margin-right: 0;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-links li {
+                margin-right: 0;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-primary {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .about-text {
+                font-size: 1rem;
+            }
+            
+            .footer-section {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <img src="{{ url_for('static', filename='images/blood2.png') }}" alt="Logo" class="logo">
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="{{ url_for('upload') }}" class="predict-btn">Predict blood group</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-container">
+            <h1 class="hero-title">AI-Powered Blood Group Detection <br>from Fingerprint Scans</h1>
+            <div class="hero-content">
+                <p class="hero-text">A Revolutionary Approach to Quick & Accurate Blood Group Identification</p>
+                <div class="button-container">
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload Image & Predict</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="about-container">
+            <h2 class="section-title fade-in">About the Project</h2>
+            <p class="about-text fade-in">"Our system leverages AI and deep learning to predict blood groups using fingerprint patterns. This innovative technology eliminates the need for traditional blood testing, offering a non-invasive and rapid solution."</p>
+            
+            <div class="features-container">
+                <div class="feature fade-in">
+                    <h3 class="feature-title">AI-Powered Image Classification</h3>
+                    <p class="feature-text">Our system uses advanced convolutional neural networks to analyze fingerprint patterns and extract features that correlate with blood group markers.</p>
+                </div>
+                
+                <div class="feature fade-in">
+                    <h3 class="feature-title">Fast & Reliable Results</h3>
+                    <p class="feature-text">Get your blood group prediction in seconds with high accuracy rates, validated against traditional testing methods.</p>
+                </div>
+                
+                <div class="feature fade-in">
+                    <h3 class="feature-title">Secure & Private Processing</h3>
+                    <p class="feature-text">All fingerprint images are processed locally and securely, with strict privacy protocols to protect your sensitive biometric data.</p>
+                </div>
+                
+                <div class="feature fade-in">
+                    <h3 class="feature-title">Easy-to-Use Interface</h3>
+                    <p class="feature-text">Our intuitive platform requires minimal technical knowledge—simply scan or upload a clear fingerprint image and receive your results.</p>
+                </div>
+            </div>
+            
+            <!-- Learn More Button -->
+            <div class="learn-more-container fade-in">
+                <a href="#" class="btn btn-secondary">Learn More About This Project</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3 class="footer-title">Navigation</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#">Predict Blood Group</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API</a></li>
+                    <li><a href="#">Research Papers</a></li>
+                    <li><a href="#">Case Studies</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">Support</h3>
+                <ul class="footer-links">
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3 class="footer-title">Connect With Us</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">GitHub</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 AI-Powered Blood Group Detection. All rights reserved. This technology is intended for research purposes only.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all elements with the fade-in class
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            // Create an Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // If the element is in the viewport
+                    if (entry.isIntersecting) {
+                        // Add the 'appear' class
+                        entry.target.classList.add('appear');
+                    } else {
+                        // Remove the 'appear' class when scrolling back up
+                        entry.target.classList.remove('appear');
+                    }
+                });
+            }, {
+                // Set the threshold to 0.1 (10% of the element must be visible)
+                threshold: 0.1,
+                // Element appears when it's 100px from entering the viewport
+                rootMargin: '0px 0px -100px 0px'
+            });
+            
+            // Observe each fade element
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // Add ripple effect for feature cards
+            const features = document.querySelectorAll('.feature');
+            
+            features.forEach(feature => {
+                // Add click event for ripple effect
+                feature.addEventListener('click', function(e) {
+                    // Create ripple element
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple-effect');
+                    
+                    // Position the ripple where clicked
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Style the ripple
+                    ripple.style.cssText = `
+                        position: absolute;
+                        background-color: rgba(255, 255, 255, 0.7);
+                        border-radius: 50%;
+                        width: 10px;
+                        height: 10px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        transform: scale(0);
+                        pointer-events: none;
+                        animation: ripple 0.6s linear;
+                    `;
+                    
+                    // Add ripple to feature
+                    this.appendChild(ripple);
+                    
+                    // Remove ripple after animation
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+                
+                // Add 3D tilt effect for more interactivity
+                feature.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Calculate the tilt based on mouse position
+                    const tiltX = (y / rect.height - 0.5) * 5; // Max 5 degrees
+                    const tiltY = -(x / rect.width - 0.5) * 5; // Max 5 degrees
+                    
+                    // Apply the tilt effect
+                    this.style.transform = `translateY(-8px) scale(1.02) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+                });
+                
+                // Reset transform when mouse leaves
+                feature.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

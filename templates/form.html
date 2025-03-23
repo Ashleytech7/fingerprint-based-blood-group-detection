@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fingerprint-Based Blood Group Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        
+
+        /* Main Content Styles */
+        .main-section {
+            display: flex;
+            justify-content: center;
+            padding: 3rem 5%;
+        }
+
+        .container {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: #ffffff;
+            font-size: 1.8rem;
+        }
+
+        /* Form Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            color: #cccccc;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* File Upload Section */
+        .upload-section {
+            margin: 2rem 0;
+        }
+
+        #imagePreview {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-top: 1rem;
+            border: 2px solid #444;
+            display: none;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            margin-top: 2rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        button:hover {
+            opacity: 0.7;
+        }
+
+        button:active{
+          opacity: 0.5;
+        }
+
+        /* Results Section */
+        .result-section {
+            margin-top: 2.5rem;
+            display: none;
+        }
+
+        .result-section h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        th {
+            background-color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <img src="{{ url_for('static', filename='images/blood2.png') }}" alt="Logo" class="logo">
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="{{ url_for('upload') }}" class="predict-btn">Predict blood group</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-section">
+        <div class="container">
+            <h1>Fingerprint Submission Form</h1>
+            
+            <form id="fingerprintForm" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mobile">Mobile</label>
+                        <input type="tel" id="mobile" pattern="[0-9]{10}" required placeholder="10-digit number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" min="1" max="100" required>
+                    </div>
+                </div>
+
+                <div class="upload-section">
+                    <div class="form-group">
+                        <label for="fingerprint">Upload Fingerprint</label>
+                        <input type="file" id="fingerprint" accept="image/*" required>
+                    </div>
+                    <img id="imagePreview" src="#" alt="Preview">
+                </div>
+
+                <div class="submit-section">
+                    <button type="button" onclick="submitDetails()">Submit</button>
+                </div>
+            </form>
+
+            <div class="result-section" id="resultSection">
+                <h2>Detection Result</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/form.js') }}">
+        
+    </script>
+</body>
+</html>
